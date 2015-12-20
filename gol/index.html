@@ -25,7 +25,32 @@
 		<script src="js/threejs-stats.js"></script>
 
 		<script>
+		var yomamma=0;
+		var matrix = [
+			[1, 0, 1, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+			[1, 1, 0, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+			[1, 1, 0, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+			[1, 0, 1, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
 
+			[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+
+			[0, 0, 0, 0, 0,  0, 1, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0,  0, 0, 1, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0,  1, 1, 1, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+
+			[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,			0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,			0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,			0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+			[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,			0, 0, 0, 0, 0,  0, 0, 0, 0, 0]
+		];
 			var container, stats;
 
 			var camera, controls, scene, renderer;
@@ -77,7 +102,7 @@
           for ( var j = gridSize; j > currRow; currRow++ ) {
             for ( var k = 0; gridSize > k; k++ ) {
               col = Math.random() * 0xffffff;
-              console.log(col);
+              //console.log(col);
               var object = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: col } ) );
 
               object.position.y = (gridSize * k) - (windowHalfY / 4) + (gutter * k);
@@ -137,21 +162,92 @@
 			}
 
 			function render() {
-        z=0;
+        var z=0,r=0,y=0,thiscolor=0xff00ff;
+				if(yomamma>20){
+					matrix = stepLife(matrix, 20, 20);
+					yomamma=0;
+				}
+				yomamma++;
         scene.traverse( function( node ) {
 
             if ( node instanceof THREE.Mesh ) {
-              z++;
-              console.log(z);
-                // insert your code here, for example:
-                node.material = new THREE.MeshNormalMaterial()
 
+
+							//c++;
+							if(z>=20){z=0;r++}
+							y = matrix[r][z];
+              //console.log(y);
+							z++;
+
+                // insert your code here, for example:
+                //node.material = new THREE.MeshNormalMaterial()
+								thiscolor=0xff00ff;
+								if(y==1){thiscolor=0xffffff}
+								node.material = new THREE.MeshLambertMaterial( { color: thiscolor } )
             }
 
-        } );
+        });
+
+
 				//plane.rotation.y = cube.rotation.y += ( targetRotation - cube.rotation.y ) * 0.05;
 				renderer.render( scene, camera );
 
+			}
+
+			var max = 20;
+
+			function genMatrix(x, y) {
+				var a = [];
+
+				for (var i = 0; i < x; i++) {
+					a.push([]);
+					for (var j = 0; j < y; j++) {
+						a[i][j] = 0;
+					}
+				}
+				return a;
+			}
+
+			function get(m, x, y) {
+				if (x > 19 || x < 0 || y > 19 || y < 0)
+					return 0;
+				if (m[x][y] == 1)
+					return 1;
+				else
+					return 0;
+			}
+			function getNeighbors(m, x, y) {
+				var nActive = 0;
+				nActive += get(m, x-1, y-1);
+				nActive += get(m, x-1, y+1);
+				nActive += get(m, x-1, y);
+				nActive += get(m, x+1, y-1);
+				nActive += get(m, x+1, y+1);
+				nActive += get(m, x+1, y);
+				nActive += get(m, x, y+1);
+				nActive += get(m, x, y-1);
+				return nActive;
+			}
+
+			function clone(a) {
+				return JSON.parse(JSON.stringify(a));
+			}
+
+			function stepLife(m, w, h) {
+				var copy = genMatrix(w, h);
+
+				for (var i = 0; i < w; i++) {
+					for (var j = 0; j < h; j++) {
+						var nNeig = getNeighbors(m, i, j);
+						if (nNeig < 2)
+							copy[i][j] = 0;
+						else if (nNeig == 2 || nNeig == 3)
+							copy[i][j] = 1;
+						else if (nNeig > 3)
+							copy[i][j] = 0;
+					}
+				}
+				return copy;
 			}
 
 		</script>
