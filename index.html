@@ -1,0 +1,141 @@
+<html>
+<head>
+	<script src="https://code.jquery.com/jquery-2.1.4.js"></script> 
+</head>
+<body>
+
+<canvas id='canvas' width='200' height='200' style='border:1px solid #000000'>
+</canvas>
+<button id='step'>Step me brah!</button>
+
+<script>
+
+var canvas = document.getElementById('canvas');
+var c = canvas.getContext('2d');
+c.fillStyle = '#FF0000';
+//c.fillRect(0, 0, 150, 75);
+//c.fillRect(0, 0, 50, 75);
+
+function setRect(x, y, state) {
+	if (state)
+		c.fillStyle = '#FF0000';
+	else
+		c.fillStyle = '#000000';
+	c.fillRect(x*10, y*10, 10, 10);
+}
+
+//setRect(0, 0);
+function drawMatrix(m, w, h) {
+	var y = 0;
+	while (y < w) {
+		var x = 0;
+		while (x < h) {
+			setRect(y, x, m[x][y]);
+			x++;
+		}
+		y++;
+	}
+}
+
+var matrix = [
+	[1, 0, 1, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+	[1, 1, 0, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+	[1, 1, 0, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+	[1, 0, 1, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0], 
+
+	[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0], 
+
+	[0, 0, 0, 0, 0,  0, 1, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0,  0, 0, 1, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0,  1, 1, 1, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0], 
+
+	[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,     0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,		0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,		0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,		0, 0, 0, 0, 0,  0, 0, 0, 0, 0],
+	[0, 0, 0, 0, 0,  0, 0, 0, 0, 0,		0, 0, 0, 0, 0,  0, 0, 0, 0, 0]
+];
+
+
+var max = 20;
+
+function genMatrix(x, y) {
+	var a = [];
+
+	for (var i = 0; i < x; i++) {
+		a.push([]);
+		for (var j = 0; j < y; j++) {
+			a[i][j] = 0;
+		}
+	}
+	return a;
+}
+
+function get(m, x, y) {
+	if (x > 19 || x < 0 || y > 19 || y < 0)
+		return 0;
+	if (m[x][y] == 1)
+		return 1;
+	else
+		return 0;
+}
+function getNeighbors(m, x, y) {
+	var nActive = 0;
+	nActive += get(m, x-1, y-1);
+	nActive += get(m, x-1, y+1);
+	nActive += get(m, x-1, y);
+	nActive += get(m, x+1, y-1);
+	nActive += get(m, x+1, y+1);
+	nActive += get(m, x+1, y);
+	nActive += get(m, x, y+1);
+	nActive += get(m, x, y-1);
+	return nActive;
+}
+
+function clone(a) {
+	return JSON.parse(JSON.stringify(a));
+}
+
+function stepLife(m, w, h) {
+	var copy = genMatrix(w, h);
+
+	for (var i = 0; i < w; i++) {
+		for (var j = 0; j < h; j++) {
+			var nNeig = getNeighbors(m, i, j);
+			if (nNeig < 2)
+				copy[i][j] = 0;
+			else if (nNeig == 2 || nNeig == 3)
+				copy[i][j] = 1;
+			else if (nNeig > 3)
+				copy[i][j] = 0;
+		}
+	}
+	return copy;
+}
+
+
+//drawMatrix(matrix, 20, 20);
+//var newM = genMatrix(20, 20);
+//drawMatrix(newM, 20, 20);
+
+drawMatrix(matrix, 20, 20);
+
+$('#step').click(function() {
+	matrix = stepLife(matrix, 20, 20);
+	drawMatrix(matrix, 20, 20);
+	//alert(matrix);
+});
+
+
+</script>
+
+
+</body>
+</html>
