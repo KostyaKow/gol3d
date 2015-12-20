@@ -162,12 +162,17 @@
 			}
 
 			function render() {
+				renderer.render( scene, camera );
+
         var z=0,r=0,y=0,thiscolor=0xff00ff;
-				if(yomamma>20){
-					matrix = stepLife(matrix, 20, 20);
+			if(yomamma<20) {
+				   yomamma++;
+               return;
+         }
+         yomamma = 0;
+			matrix = stepLife(matrix, 20, 20);
 					yomamma=0;
-				}
-				yomamma++;
+				
         scene.traverse( function( node ) {
 
             if ( node instanceof THREE.Mesh ) {
@@ -190,7 +195,6 @@
 
 
 				//plane.rotation.y = cube.rotation.y += ( targetRotation - cube.rotation.y ) * 0.05;
-				renderer.render( scene, camera );
 
 			}
 
