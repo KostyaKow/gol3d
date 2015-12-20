@@ -81,11 +81,9 @@ function genMatrix(x, y) {
 function get(m, x, y) {
 	if (x > 19 || x < 0 || y > 19 || y < 0)
 		return 0;
-	if (m[x][y] == 1)
-		return 1;
-	else
-		return 0;
-}
+	return m[x][y];
+} //if (m[x][y] == 1) return 1; else return 0;
+
 function getNeighbors(m, x, y) {
 	var nActive = 0;
 	nActive += get(m, x-1, y-1);
@@ -108,13 +106,23 @@ function stepLife(m, w, h) {
 
 	for (var i = 0; i < w; i++) {
 		for (var j = 0; j < h; j++) {
-			var nNeig = getNeighbors(m, i, j);
+			/*var nNeig = getNeighbors(m, i, j);
 			if (nNeig < 2)
 				copy[i][j] = 0;
 			else if (nNeig == 2 || nNeig == 3)
 				copy[i][j] = 1;
 			else if (nNeig > 3)
+				copy[i][j] = 0;*/
+			var numn = getNeighbors(m, i, j);
+			var life = m[i][j];
+			if (life && numn < 2)
 				copy[i][j] = 0;
+			if (life && (numn == 3 || numn == 2))
+				copy[i][j] = 1;
+			if (life && numn > 3)
+				copy[i][j] = 0;
+			if (!life && numn == 3)
+				copy[i][j] = 1;
 		}
 	}
 	return copy;
